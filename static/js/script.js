@@ -105,7 +105,7 @@ function displayResults(data) {
     if (data.grade === 'A+' || data.grade === 'A') {
         scoreCircle.style.borderColor = 'rgba(16, 185, 129, 0.8)';
     } else if (data.grade === 'B') {
-        scoreCircle.style.borderColor = 'rgba(6, 182, 212, 0.8)';
+        scoreCircle.style.borderColor = 'rgba(102, 126, 234, 0.8)';
     } else if (data.grade === 'C') {
         scoreCircle.style.borderColor = 'rgba(245, 158, 11, 0.8)';
     } else {
@@ -177,9 +177,173 @@ function displayGraphs(graphs) {
         const div = document.createElement('div');
         div.className = 'graph-item';
         div.style.animationDelay = `${graphIndex * 0.1}s`;
-        div.innerHTML = `<img src="data:image/png;base64,${imgData}" alt="${graphTitles[key] || key}">`;
+        
+        const img = document.createElement('img');
+        img.src = `data:image/png;base64,${imgData}`;
+        img.alt = graphTitles[key] || key;
+        
+        // Make graph clickable - opens in new tab
+        div.addEventListener('click', () => {
+            openGraphInNewTab(imgData, graphTitles[key] || key);
+        });
+        
+        // Add keyboard accessibility
+        div.setAttribute('tabindex', '0');
+        div.setAttribute('role', 'button');
+        div.setAttribute('aria-label', `Click to enlarge ${graphTitles[key] || key}`);
+        
+        div.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openGraphInNewTab(imgData, graphTitles[key] || key);
+            }
+        });
+        
+        div.appendChild(img);
         container.appendChild(div);
         graphIndex++;
+    }
+}
+
+function openGraphInNewTab(base64Data, title) {
+    // Create a new window with the graph
+    const newWindow = window.open('', '_blank');
+    
+    if (newWindow) {
+        newWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${title}</title>
+                <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+                    body {
+                        background: #0f0f23;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        min-height: 100vh;
+                        padding: 2rem;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    }
+                    .header {
+                        background: rgba(26, 26, 46, 0.8);
+                        backdrop-filter: blur(20px);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 1rem;
+                        padding: 1.5rem 2rem;
+                        margin-bottom: 2rem;
+                        text-align: center;
+                    }
+                    h1 {
+                        color: white;
+                        font-size: 1.5rem;
+                        margin-bottom: 0.5rem;
+                    }
+                    .subtitle {
+                        color: #94a3b8;
+                        font-size: 0.9rem;
+                    }
+                    .graph-container {
+                        background: rgba(26, 26, 46, 0.8);
+                        backdrop-filter: blur(20px);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 1.5rem;
+                        padding: 2rem;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+                        max-width: 1200px;
+                        width: 100%;
+                    }
+                    img {
+                        width: 100%;
+                        height: auto;
+                        border-radius: 0.5rem;
+                        display: block;
+                    }
+                    .actions {
+                        margin-top: 1.5rem;
+                        display: flex;
+                        gap: 1rem;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                    }
+                    button {
+                        padding: 0.75rem 1.5rem;
+                        border: none;
+                        border-radius: 0.5rem;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+                    .btn-download {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                    }
+                    .btn-download:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+                    }
+                    .btn-close {
+                        background: rgba(75, 85, 99, 0.5);
+                        color: #cbd5e1;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                    }
+                    .btn-close:hover {
+                        background: rgba(75, 85, 99, 0.7);
+                        color: white;
+                    }
+                    @media (max-width: 768px) {
+                        body {
+                            padding: 1rem;
+                        }
+                        .graph-container {
+                            padding: 1rem;
+                        }
+                        h1 {
+                            font-size: 1.2rem;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>${title}</h1>
+                    <p class="subtitle">Student Performance Analysis</p>
+                </div>
+                <div class="graph-container">
+                    <img src="data:image/png;base64,${base64Data}" alt="${title}">
+                    <div class="actions">
+                        <button class="btn-download" onclick="downloadGraph()">
+                            📥 Download Graph
+                        </button>
+                        <button class="btn-close" onclick="window.close()">
+                            ✕ Close
+                        </button>
+                    </div>
+                </div>
+                <script>
+                    function downloadGraph() {
+                        const link = document.createElement('a');
+                        link.href = 'data:image/png;base64,${base64Data}';
+                        link.download = '${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png';
+                        link.click();
+                    }
+                </script>
+            </body>
+            </html>
+        `);
+        newWindow.document.close();
+    } else {
+        // Fallback if popup is blocked
+        alert('Please allow popups to view the graph in full size. Alternatively, right-click the graph and select "Open image in new tab".');
     }
 }
 
@@ -198,3 +362,17 @@ function animateValue(id, start, end, duration) {
         element.textContent = current.toFixed(1);
     }, 16);
 }
+
+// Add smooth scroll behavior for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
