@@ -110,11 +110,11 @@ Output: Predicted GPA (e.g., 3.2), percentage (80%), grade (A), percentile, and 
 ![Landing Page](screenshots/1.png)  
 *(Hero section with stats, CTAs, and floating visual cards showcasing prediction accuracy.)*
 
-### Features Section
+### Prediction Form -1
 ![Features](screenshots/2.png)  
 *(Grid of feature cards highlighting AI analysis, insights, and visualizations.)*
 
-### Prediction Form
+### Prediction Form-2
 ![Prediction Form](screenshots/3.png)  
 *(Multi-section form with glass-card styling for study habits, personal info, and school environment.)*
 
@@ -122,11 +122,12 @@ Output: Predicted GPA (e.g., 3.2), percentage (80%), grade (A), percentile, and 
 ![Results Page](screenshots/4.png)  
 *(Animated score circle, grade badge, metrics grid, and percentile indicator.)*
 
-### Insights & Recommendations
+
+### Graphs & Visualizations
 ![Insights](screenshots/5.png)  
 *(Color-coded insights grid and prioritized recommendation cards with impact metrics.)*
 
-### Graphs & Visualizations
+### Insights & Recommendations
 ![Graphs](screenshots/6.png)  
 *(Interactive graph grid: distribution, study impact, attendance analysis, etc. Click to enlarge.)*
 
